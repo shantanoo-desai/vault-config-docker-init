@@ -1,0 +1,33 @@
+version: '3.7'
+volumes:
+  # Use this volume to mount the configuration file into the Vault container
+  vault-init-config:
+
+services:
+  vault:
+    image: vault:1.10.0
+    container_name: vault
+    hostname: vault
+    command: server
+    environment:
+      - VAULT_ADDR=http://vault:8200
+      - VAULT_CONFIG_DIR=/vault/config
+      - VAULT_UI=true
+    depends_on:
+      vault-init:
+        condition: service_started # Let the init container create the config file first
+    volumes:
+      - vault-init-config:/vault/config # Share the created config file from init container
+    ports:
+      - "127.0.0.1:8200:8200"
+    cap_add:
+      - "IPC_LOCK"
+  
+  vault-init:
+    image: vault:1.10.0
+    container_name: vault-init-container
+    command: |
+      sh -c '/vault-config-init.sh'
+    volumes:
+      - ./scripts/vault-config-init.sh:/vault-config-init.sh
+      - vault-init-config:/vault/config
