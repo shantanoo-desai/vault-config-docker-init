@@ -31,7 +31,7 @@ services:
       - VAULT_UI=true
     depends_on:
       vault-init:
-        condition: service_started # Let the init container create the config file first
+        condition: service_completed_successfully # Let the init container create the config file first
     volumes:
       - vault-init-config:/vault/config # Share the created config file from init container
     ports:
@@ -45,5 +45,5 @@ services:
     command: |
       sh -c '/vault-config-init.sh'
     volumes:
-      - ./scripts/vault-config-init.sh:/vault-config-init.sh
+      - ./scripts/vault-init-config.sh:/vault-config-init.sh
       - vault-init-config:/vault/config
