@@ -25,7 +25,7 @@ listener "tcp" {
               tls_disable = "1" 
               cluster_address = "vault:8201" 
           } 
-          backend "file" {
+          storage "file" {
               path = "/vault/file"
           } 
           default_lease_ttl = "168h" 
